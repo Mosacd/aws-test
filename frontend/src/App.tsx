@@ -1,32 +1,31 @@
 import { useEffect, useState } from 'react';
 import './App.css';
+import { createAnswer, fetchLatestAnswer } from './services/api';
 function App() {
   const [answer, setAnswer] = useState('');
   const [input, setInput] = useState('');
 
   useEffect(() => {
-    fetch('http://localhost:3001/api/get-latest-answer')
-      .then(res => res.json())
-      .then(data => setAnswer(data.data))
-      .catch(err => console.error(err));
-  }, [answer]);
+    const loadLatestAnswer = async () => {
+      try {
+        const latest = await fetchLatestAnswer();
+        setAnswer(latest);
+      } catch (error) {
+        throw new Error(`Failed to fetch the latest answer: ${error}`);
+      }
+    };
+    
+    loadLatestAnswer();
+  }, []); // Empty dependency array means this runs once on mount
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const res = await fetch('http://localhost:3001/api/create-answer', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ data: input }),
-      });
-      const result = await res.json();
-      console.log(result);
-      setAnswer(result.data);
+      const newAnswer = await createAnswer(input);
+      setAnswer(newAnswer);
       setInput('');
-    } catch (err) {
-      console.error(err);
+    } catch (error) {
+        throw new Error(`Failed to fetch the latest answer: ${error}`);
     }
   };
 
