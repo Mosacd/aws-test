@@ -42,7 +42,7 @@ function App() {
 
     <div className='wrapper'>
       <h1 className='title'>Latest Answer</h1>
-      <p>{answer}</p>
+      <span id="answer">{answer || 'Loading...'}</span>
     </div>
 </>
 
